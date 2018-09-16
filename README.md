@@ -107,7 +107,7 @@ HTML;
 };
 ```
 
-## Example routes.json file
+## Example `routes.json` file
 ```javascript
 {
 	"home": {
