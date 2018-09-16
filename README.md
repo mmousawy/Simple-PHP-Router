@@ -6,6 +6,7 @@ View example project using Simple PHP Router: https://murtada.nl/projects/simple
 ## Setting up a project
 ### 1. Initializing classes
 
+`index.php`:
 ```php
 require '/lib/SimplePhpRouter.php';
 require '/lib/Route.php';
@@ -110,7 +111,8 @@ HTML;
 };
 ```
 
-## Example `routes.json` file
+## Example routes file
+`routes.json`
 ```javascript
 {
 	"home": {
