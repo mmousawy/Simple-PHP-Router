@@ -4,7 +4,8 @@ A quick solution for routing friendly URLs and dynamic parameters to pages.
 View example project using Simple PHP Router: https://murtada.nl/projects/simple-php-router/example/
 
 ## Setting up a project
-1. Require the necessary classes and create a new instance of SimplePhpRouter using an external `routes.json` file to 
+### 1. Initializing classes
+
 ```php
 require '/lib/SimplePhpRouter.php';
 require '/lib/Route.php';
@@ -14,7 +15,8 @@ $router = new Murtada\SimplePhpRouter('routes.json');
 require 'template.php';
 ```
 
-2. Creating a template
+### 2. Creating a template
+
 `template.php`:
 ```php
 <!DOCTYPE html>
@@ -45,7 +47,8 @@ require 'template.php';
 </html>
 ```
 
-3. Create pages
+### 3. Create pages
+
 `pages/home.php`:
 
 ```php
