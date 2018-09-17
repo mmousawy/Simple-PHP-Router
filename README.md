@@ -89,7 +89,8 @@ return function(&$router) {
 HTML;
 	} else {
 		$postLocation = 'data/' . $params['id'] . '.json';
-
+		
+		// Resolve to 404 page if file does not exist
 		if (!file_exists($postLocation)) {
 			$router->resolve('404');
 			return $router->currentPage;
@@ -171,7 +172,7 @@ HTML;
 		"slug": "404",
 		"route": "*",
 		"path": "pages/404.php",
-		"hidden": true
+		"menu_hidden": true
 	}
 }
 ```
