@@ -1,11 +1,17 @@
 <?php
-
 return function(&$router) {
+	$randomParam1 = rand(1000, 9999);
+	$randomParam2 = rand(1000, 9999);
+	$randomParam3 = rand(1000, 9999);
+
+	$params = $router->getParams();
+
 	$content =
 <<<HTML
 <h1>Simple PHP Router example</h1>
 <p>This is an example website with a fully functional setup of the Simple PHP Router class.</p>
-<p>Navigate throughout this website with the menu in the header.</p>
+<p>Navigate through this website with the menu in the header.</p>
+<p><a href="test/{$randomParam1}/{$randomParam2}/{$randomParam3}">Parameters test page</a>.</p>
 HTML;
 
 	return [

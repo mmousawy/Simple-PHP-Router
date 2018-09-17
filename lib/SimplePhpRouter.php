@@ -96,14 +96,14 @@ class SimplePhpRouter {
 					if ($routeSyntax === '' || $routeSyntax === 'home') {
 						$filesRoutes['__spr_default'] = [];
 						$filesRoutes['__spr_default'] = array_merge($filesRoutes['__spr_default'], $route);
-						$filesRoutes['__spr_default']['hidden'] = true;
+						$filesRoutes['__spr_default']['menu_hidden'] = true;
 					}
 				}
 			} else {
 				if ($route['route'] === '' || $routeSyntax === 'home') {
 					$filesRoutes['__spr_default'] = [];
 					$filesRoutes['__spr_default'] = array_merge($filesRoutes['__spr_default'], $route);
-					$filesRoutes['__spr_default']['hidden'] = true;
+					$filesRoutes['__spr_default']['menu_hidden'] = true;
 				}
 			}
 		}
@@ -149,7 +149,18 @@ class SimplePhpRouter {
 
 		$this->currentRoute = $resolved;
 		$this->currentPath = implode('/', $pathParts);
+
+		if (!is_callable(require $this->currentRoute['route']['path'])) {
+			throw new UnexpectedValueException(
+				sprintf(
+					'Resolved page "%1$s" does not have a callable ',
+					$this->currentRoute['route']['slug']
+				)
+			);
+		}
+
 		$this->currentPage = (object) (require $this->currentRoute['route']['path'])($this);
+		$this->currentPage->title = isset($this->currentPage->title) ? $this->currentPage->title : $resolved['route']['title'];
 		$this->currentPage->slug = $resolved['route']['slug'];
 
 		return $resolved;
@@ -194,7 +205,11 @@ class SimplePhpRouter {
 			}
 		}
 
- 		foreach ($routesPart as $route) {
+		foreach ($routesPart as $route) {
+			if (!isset($route['route'])) {
+				return;
+			}
+
 			$routeLabels = (array) $route['route'];
 
 			foreach ($routeLabels as $label) {
@@ -202,6 +217,8 @@ class SimplePhpRouter {
 
 				// Found a route
 				if ($routeParts[0] == $pathParts[0]) {
+
+
 					$params = [];
 					$path .= '/' . $pathParts[0];
 
@@ -219,12 +236,18 @@ class SimplePhpRouter {
 						array_shift($routeParts);
 					}
 
+
 					if (isset($routes)) {
 						$routes[] = new Route($route, $params, $path);
 					}
 
 					if (count($pathParts) > 1) {
 						array_shift($pathParts);
+
+						if (!isset($route['children'])) {
+							return;
+						}
+
 						return $this->searchRoute($pathParts, $route['children'], $routes);
 					}
 
@@ -236,7 +259,7 @@ class SimplePhpRouter {
 			}
 		}
 
-    return null;
+    return;
   }
 
 	/**
@@ -280,9 +303,17 @@ class SimplePhpRouter {
 	 *
 	 * @return array||null
 	 */
-	public function getParams()
+	public function getParams($index = 0)
 	{
-		return $this->currentRoute['routes'][0]->params;
+		if (!isset($this->currentRoute['routes'])) {
+			return [];
+		}
+
+		$keys = array_keys($this->currentRoute['routes']);
+
+		$index = end($keys) + $index;
+
+		return $this->currentRoute['routes'][$index]->params;
 	}
 
 	/**
@@ -321,7 +352,7 @@ class SimplePhpRouter {
 		}
 
 		return array_reduce($children, function($prev, $child) use ($childPath, $options, $children) {
-			if (isset($child['hidden']) && $child['hidden']) {
+			if (isset($child['menu_hidden']) && $child['menu_hidden']) {
 				return $prev;
 			}
 

@@ -10,10 +10,3 @@
 		<?= $router->currentPage->content; ?>
 	</div>
 </main>
-<footer>
-	<div class="wrapper">
-		<p class="footer__text">Copyright &copy; 2018 Murtada al Mousawy</p>
-		<p class="footer__text">This software is free for use under the MIT License</p>
-	</div>
-</footer>
-</body>

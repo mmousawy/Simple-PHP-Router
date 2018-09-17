@@ -9,6 +9,19 @@
 		"menu_route": "",
 		"path": "pages/home.php"
 	},
+	"test": {
+		"title": "Test page",
+		"slug": "test",
+		"route": "test/:param1/:param2/:param3",
+		"path": "pages/test.php",
+		"menu_hidden": true,
+		"children": [{
+			"title": "Test child page",
+			"slug": "test-child",
+			"route": "child/:param1/:param2",
+			"path": "pages/test-child.php"
+		}]
+	},
 	"posts": {
 		"title": "Posts",
 		"slug": "posts",
@@ -55,6 +68,6 @@
 		"slug": "404",
 		"route": "*",
 		"path": "pages/404.php",
-		"hidden": true
+		"menu_hidden": true
 	}
 }
