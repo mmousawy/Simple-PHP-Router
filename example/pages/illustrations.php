@@ -20,7 +20,6 @@ return function(&$router) {
 HTML;
 
 	return [
-		'title' => 'illustrations',
 		'content' => $content
 	];
 };

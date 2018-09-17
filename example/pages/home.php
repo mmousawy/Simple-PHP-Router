@@ -8,10 +8,10 @@ return function(&$router) {
 
 	$content =
 <<<HTML
-<h1>Simple PHP Router example</h1>
+<img class="spr-logo" src="assets/img/spr-logo.svg">
 <p>This is an example website with a fully functional setup of the Simple PHP Router class.</p>
 <p>Navigate through this website with the menu in the header.</p>
-<p><a href="test/{$randomParam1}/{$randomParam2}/{$randomParam3}">Parameters test page</a>.</p>
+<p>Or try the <a href="test/{$randomParam1}/{$randomParam2}/{$randomParam3}">parameters test page</a>.</p>
 HTML;
 
 	return [
