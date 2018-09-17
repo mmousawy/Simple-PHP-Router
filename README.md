@@ -1,3 +1,5 @@
+![Simple PHP Router](https://cdn.rawgit.com/mmousawy/Simple-PHP-Router/master/example/assets/img/spr-logo.svg)
+
 # Simple-PHP-Router
 A quick solution for routing friendly URLs and dynamic parameters to pages.
 
