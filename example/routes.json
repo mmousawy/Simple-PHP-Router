@@ -15,12 +15,26 @@
 		"route": "test/:param1/:param2/:param3",
 		"path": "pages/test.php",
 		"menu_hidden": true,
-		"children": [{
-			"title": "Test child page",
-			"slug": "test-child",
-			"route": "child/:param1/:param2",
-			"path": "pages/test-child.php"
-		}]
+		"children": {
+			"test-01": {
+				"title": "Simple child page",
+				"slug": "test-01",
+				"route": "test-01",
+				"path": "pages/test-child.php"
+			},
+			"test-02": {
+				"title": "Params child page 1",
+				"slug": "test-02",
+				"route": "test-02/:param1/:param2",
+				"path": "pages/test-child.php"
+			},
+			"test-03": {
+				"title": "Params child page 2",
+				"slug": "test-03",
+				"route": "test-03/:param1/:param2",
+				"path": "pages/test-child.php"
+			}
+		}
 	},
 	"posts": {
 		"title": "Posts",

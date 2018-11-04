@@ -351,7 +351,10 @@ class SimplePhpRouter {
       });
     }
 
-    return array_reduce($children, function($prev, $child) use ($childPath, $options, $children) {
+    $mappedChildPath = $this->mapParams($childPath, $this->getParams());
+
+    // Find the child route
+    return array_reduce($children, function($prev, $child) use ($mappedChildPath, $options, $children) {
       if (isset($child['menu_hidden']) && $child['menu_hidden']) {
         return $prev;
       }
@@ -373,13 +376,44 @@ class SimplePhpRouter {
       }
 
       $menuRoute = (isset($child['menu_route']) ? $child['menu_route'] : ((array) $child['route'])[0]);
-      $menuRoute = strtok($menuRoute, ':');
-      $menuRoute = rtrim($menuRoute, '/');
+
+      $menuItemParams = (isset($options['params'][$child['slug']]) ? $options['params'][$child['slug']] : []);
+      $mappedMenuRoute = $this->mapParams($menuRoute, $menuItemParams);
 
       $prefix = str_replace('%active-class%', $activeClass, $options['prefix']);
-      $prefix = str_replace('%link%', $childPath . $menuRoute , $prefix);
+      $prefix = str_replace('%link%', $mappedChildPath . $mappedMenuRoute , $prefix);
 
       return $prev . $prefix . $child['title'] . $options['suffix'];
     });
+  }
+
+  /**
+   * Returns a params mapped path
+   *
+   * @param string $path A path to be mapped with available params
+   *
+   * @param array $params Array with key value params to me mapped to the path string
+   *
+   * @return string
+   */
+  private function mapParams($path, $params) {
+    $pathParts = explode('/', rtrim($path, '/'));
+
+    $mappedPathParts = '';
+
+    forEach($pathParts as &$part) {
+      if (strpos($part, ':') === 0) {
+        $paramName = substr($part, 1);
+
+        if (isset($params[$paramName])) {
+          $mappedPathParts .= $params[$paramName] . '/';
+          continue;
+        }
+      } else {
+        $mappedPathParts .= $part . '/';
+      }
+    }
+
+    return $mappedPathParts;
   }
 }

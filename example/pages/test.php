@@ -4,13 +4,26 @@ return function(&$router) {
 	$params = $router->getParams();
 	$paramsOutput = var_export($params, true);
 
-	$randomParam1 = rand(1000, 9999);
-	$randomParam2 = rand(1000, 9999);
+	$tabs = $router->createMenu('test', [
+		'prefix' => '<li class="tab"><a class="tab__link%active-class%" href="%link%">',
+		'suffix' => '</a></li>',
+		'params' => [
+			'test-02' => [
+				'param1' => rand(1000, 9999),
+				'param2' => rand(1000, 9999)
+			],
+			'test-03' => [
+				'param1' => rand(1000, 9999),
+				'param2' => rand(1000, 9999)
+			]
+		],
+		'activeClass' => 'tab__link--active'
+	]);
 
 	$content =
 <<<HTML
 <h1>Parameters test page</h1>
-<p><a href="test/{$params['param1']}/{$params['param2']}/{$params['param3']}/child/{$randomParam1}/{$randomParam2}">Child parameters test page</a>.</p>
+<ul class="tabs">{$tabs}</ul>
 <pre>
 {$paramsOutput}
 </pre>
