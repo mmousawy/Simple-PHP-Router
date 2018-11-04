@@ -19,7 +19,6 @@ class SimplePhpRouter {
   /**
    * Constructor
    *
-   * @param string $root Root folder of the app
    * @param string $routesPath Path to routes file
    */
   public function __construct($routesPath)
@@ -52,7 +51,7 @@ class SimplePhpRouter {
   private function loadRoutes($path = null): array
   {
     if (!file_exists($path)) {
-      throw new UnexpectedValueException(
+      throw new OutOfBoundsException(
         'Provided path for routes file cannot be resolved'
       );
     }
@@ -73,12 +72,11 @@ class SimplePhpRouter {
    */
   private function iterateRoutes(&$filesRoutes = null)
   {
-
     foreach ($filesRoutes as $route) {
       $path = getcwd() . '/' . $route['path'];
 
       if (!file_exists($path)) {
-        throw new UnexpectedValueException(sprintf(
+        throw new OutOfBoundsException(sprintf(
           'Provided path (%1$s) for route "%2$s" cannot be resolved',
           $path,
           is_array($route['route'])
@@ -303,7 +301,7 @@ class SimplePhpRouter {
    *
    * @return array||null
    */
-  public function getParams($index = 0)
+  public function getParams($index = null)
   {
     if (!isset($this->currentRoute['routes'])) {
       return [];
@@ -311,7 +309,9 @@ class SimplePhpRouter {
 
     $keys = array_keys($this->currentRoute['routes']);
 
-    $index = end($keys) + $index;
+    $index = $index < 0 || $index === null
+              ? end($keys) + $index
+              : $index;
 
     return $this->currentRoute['routes'][$index]->params;
   }
@@ -329,7 +329,7 @@ class SimplePhpRouter {
       $options = $this->defaultMenuOptions;
     }
 
-    if (!isset($route)) {
+    if (!isset($route) || $route === null) {
       $resolved = $this->routes;
     } else if (isset($route)) {
       $resolved = $this->getRoute($route);
@@ -346,15 +346,26 @@ class SimplePhpRouter {
     $childPath = $this->baseUrl;
 
     if (isset($resolved['routes'])) {
-      $childPath = array_reduce($resolved['routes'], function($prevResult, $route) {
-        return $prevResult . $route->route['route'] . '/';
+      $index = 0;
+
+      $childPath .= array_reduce($resolved['routes'], function($prevResult, $route) use (&$index) {
+        $currentRoutes = (array)$route->route['route'];
+        $urlPart = end($currentRoutes);
+
+        if (strlen($urlPart) > 0) {
+          $urlPart .= '/';
+        }
+
+        $urlPart = $this->mapParams($urlPart, $this->getParams($index));
+
+        $index++;
+
+        return $prevResult . $urlPart;
       });
     }
 
-    $mappedChildPath = $this->mapParams($childPath, $this->getParams());
-
     // Find the child route
-    return array_reduce($children, function($prev, $child) use ($mappedChildPath, $options, $children) {
+    return array_reduce($children, function($prev, $child) use ($childPath, $options, $children) {
       if (isset($child['menu_hidden']) && $child['menu_hidden']) {
         return $prev;
       }
@@ -381,7 +392,7 @@ class SimplePhpRouter {
       $mappedMenuRoute = $this->mapParams($menuRoute, $menuItemParams);
 
       $prefix = str_replace('%active-class%', $activeClass, $options['prefix']);
-      $prefix = str_replace('%link%', $mappedChildPath . $mappedMenuRoute , $prefix);
+      $prefix = str_replace('%link%', $childPath . $mappedMenuRoute, $prefix);
 
       return $prev . $prefix . $child['title'] . $options['suffix'];
     });
@@ -396,7 +407,8 @@ class SimplePhpRouter {
    *
    * @return string
    */
-  private function mapParams($path, $params) {
+  private function mapParams($path, $params)
+  {
     $pathParts = explode('/', rtrim($path, '/'));
 
     $mappedPathParts = '';
